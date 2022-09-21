@@ -61,35 +61,40 @@ func messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	}
 
 	if strings.Contains(m.Content, "gamersclub") {
-		gamersclubMessage(s, m)
+		return gamersclubMessage(s, m)
 	}
 
 	if strings.Contains(m.Content, "vitor") {
-		vitorMessage(s, m)
+		return vitorMessage(s, m)
 	}
 
 	if strings.Contains(m.Content, "wolke") {
-		vitorMessage(s, m)
+		return vitorMessage(s, m)
 	}
+
+	if strings.Contains(m.Content, "f") {
+		return fMessage(s, m)
+	}
+
+	if strings.Contains(m.Content, "bob") {
+		return bobMessage(s, m)
+	}
+
+	if strings.Contains(m.Content, "chinela"){
+		return chinelaMessage(s, m)
+	}
+
+	if strings.Contains(m.Content, "bora") ||
+		strings.Contains(m.Content, "online") ||
+		strings.Contains(m.Content, "vamo") ||
+		strings.Contains(m.Content, "jogar") ||
+		strings.Contains(m.Content, "voltei") ||
+		strings.Contains(m.Content, "avisa") ||
+		strings.Contains(m.Content, "hoje") ||
+		strings.Contains(m.Content, "jogando") ||
+		strings.Contains(m.Content, "?") {
+		return boraMessage(s, m)
+	}
+	//vou levar um colchao na sogra volto em 15
 	return nil
-}
-
-
-func csgoMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "BORA JOGAR UM CSGO PORRA")
-	return err
-}
-
-func gamersclubMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "Gamers Club é muito coisa de try hard")
-	return err
-}
-
-func vitorMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "vitor = baiter")
-	if err != nil {
-		return err
-	}
-	_, err = s.ChannelMessageSend(m.ChannelID, "ele tb nunca planta a bomba")
-	return err
 }
