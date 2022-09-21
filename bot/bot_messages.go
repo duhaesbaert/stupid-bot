@@ -74,4 +74,6 @@ func boraMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		_, err := s.ChannelMessageSend(m.ChannelID, "hoje tem")
 		return err
 	}
+
+	return nil
 }
