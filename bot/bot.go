@@ -15,32 +15,32 @@ var (
 
 // Start initializes the bot functionality, using the configuration already loaded from the config.json.
 func Start() {
-	common.NormalizedLog("initializing bot", common.Info)
+	common.InfoLog("initializing bot")
 	// creates a new session for the bot using the respective Token.
 	goBot, err := discordgo.New("Bot " + config.Token)
 	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
+		common.ErrorLog(err.Error())
 		return
 	}
 
-	common.NormalizedLog("assigning user to bot", common.Info)
+	common.ErrorLog("assigning user to bot")
 	u, err := goBot.User("@me")
 	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
+		common.ErrorLog(err.Error())
 		return
 	}
 	BotId = u.ID
 
 	goBot.AddHandler(messageHandler)
 
-	common.NormalizedLog("connecting bot to discord", common.Info)
+	common.InfoLog("connecting bot to discord")
 	err = goBot.Open()
 	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
+		common.ErrorLog(err.Error())
 		return
 	}
 
-	common.NormalizedLog("bot running", common.Info)
+	common.InfoLog("bot running")
 }
 
 // messageHandler watches for messages sent on the discord channel by other users and interacts with them, either by sending new messages or by performing actions.
@@ -51,7 +51,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	err := messageSelector(s,m)
 	if err != nil {
-		common.NormalizedLog(fmt.Sprintf("could not sent message: %s", err.Error()), common.Error)
+		common.ErrorLog(fmt.Sprintf("could not sent message: %s", err.Error()))
 	}
 }
 

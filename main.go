@@ -10,7 +10,7 @@ import(
 func main() {
 	err := config.ReadConfig()
 	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
+		common.ErrorLog(err.Error())
 		return
 	}
 

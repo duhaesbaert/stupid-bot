@@ -6,12 +6,27 @@ import (
 )
 
 const (
-	Error		string = "ERROR"
-	Warning		string = "WARNING"
-	Info 		string = "INFO"
+	error		string = "ERROR"
+	warning		string = "WARNING"
+	info 		string = "INFO"
 )
 
 // NormalizedLog returns normalized message using the indicated log level.
-func NormalizedLog(message string, logLevel string) {
-	fmt.Println(fmt.Sprintf("|%t|%s|%s", time.Now().String(), logLevel, message))
+func logMessage(message, logLevel string) {
+	fmt.Println(normalizeMessage(message, logLevel))
+}
+func normalizeMessage(message, logLevel string) string {
+	return fmt.Sprintf("|%t|%s|%s", time.Now().String(), logLevel, message)
+}
+
+func ErrorLog(message string) {
+	logMessage(message, error)
+}
+
+func WarningLog(message string) {
+	logMessage(message, warning)
+}
+
+func InfoLog(message string) {
+	logMessage(message, info)
 }
