@@ -19,7 +19,7 @@ func Start() {
 	// creates a new session for the bot using the respective Token.
 	goBot, err := discordgo.New("Bot " + config.Token)
 	if err != nil {
-		common.ErrorLog(err.Error())
+		common.ErrorLog(fmt.Sprintf("error creating bot session on Discord: %s", err.Error()))
 		return
 	}
 
@@ -36,7 +36,7 @@ func Start() {
 	common.InfoLog("connecting bot to discord")
 	err = goBot.Open()
 	if err != nil {
-		common.ErrorLog(err.Error())
+		common.ErrorLog(fmt.Sprintf("error opening connection: %s", err.Error()))
 		return
 	}
 
