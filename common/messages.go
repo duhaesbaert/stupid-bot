@@ -7,7 +7,7 @@ import (
 
 const (
 	error		string = "ERROR"
-	warning		string = "WARNING"
+	warning		string = "WARN"
 	info 		string = "INFO"
 )
 
@@ -16,7 +16,7 @@ func logMessage(message, logLevel string) {
 	fmt.Println(normalizeMessage(message, logLevel))
 }
 func normalizeMessage(message, logLevel string) string {
-	return fmt.Sprintf("|%t|%s|%s", time.Now().String(), logLevel, message)
+	return fmt.Sprintf("|%s|%s|%s", time.Now().String(), logLevel, message)
 }
 
 func ErrorLog(message string) {

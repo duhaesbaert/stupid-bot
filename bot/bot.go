@@ -23,7 +23,7 @@ func Start() {
 		return
 	}
 
-	common.ErrorLog("assigning user to bot")
+	common.InfoLog("assigning user to bot")
 	u, err := goBot.User("@me")
 	if err != nil {
 		common.ErrorLog(err.Error())
@@ -46,16 +46,19 @@ func Start() {
 // messageHandler watches for messages sent on the discord channel by other users and interacts with them, either by sending new messages or by performing actions.
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == BotId {
+		common.WarningLog("message sent by bot -> ignoring")
 		return
 	}
 
-	err := messageSelector(s,m)
+	err := messageSelector(s, m)
 	if err != nil {
 		common.ErrorLog(fmt.Sprintf("could not sent message: %s", err.Error()))
 	}
 }
 
 func messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	common.InfoLog(fmt.Sprintf("found message on thread: %s", m.Content))
+
 	if strings.Contains(m.Content, "cs") {
 		return csgoMessage(s, m)
 	}
@@ -101,7 +104,9 @@ func messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	}
 
 	if strings.Contains(m.Content, "hess") || strings.Contains(m.Content, "hsz") || strings.Contains(m.Content, "geferson") {
-		hszMessage(s, m)
+		return hszMessage(s, m)
 	}
+
+	common.WarningLog("no message has been identified to be sent.")
 	return nil
 }

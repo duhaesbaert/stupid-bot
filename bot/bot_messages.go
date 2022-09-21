@@ -1,79 +1,105 @@
 package bot
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"math/rand"
+	"stupid-bot/common"
 )
 
 func csgoMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "BORA JOGAR UM CSGO PORRA")
+	message := "BORA JOGAR UM CSGO PORRA"
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+
+	_, err := s.ChannelMessageSend(m.ChannelID, message)
 	return err
 }
 
 func gamersclubMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "Gamers Club é muito coisa de try hard")
+	message := "Gamers Club é muito coisa de try hard"
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+
+	_, err := s.ChannelMessageSend(m.ChannelID, message)
 	return err
 }
 
 func vitorMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "vitor = baiter")
+	message := "vitor = baiter"
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err := s.ChannelMessageSend(m.ChannelID, message)
 	if err != nil {
 		return err
 	}
-	_, err = s.ChannelMessageSend(m.ChannelID, "ele tb nunca planta a bomba")
+
+	message = "ele tb nunca planta a bomba"
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err = s.ChannelMessageSend(m.ChannelID, message)
 	return err
 }
 
 func fMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "F")
+	message := "F"
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err := s.ChannelMessageSend(m.ChannelID, message)
 	return err
 }
 
 func bobMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "bob uma vez foi level 20 GC")
+	message := "bob uma vez foi level 20 GC"
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err := s.ChannelMessageSend(m.ChannelID, message)
 	return err
 }
 
 func chinelaMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "De acordo com o leetify, chinela tem a maior taxa de amigos cegos por flash. Ótimo aproveitamento de utilitários.")
+	message := "De acordo com o leetify, chinela tem a maior taxa de amigos cegos por flash. Ótimo aproveitamento de utilitários."
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err := s.ChannelMessageSend(m.ChannelID, message)
 	return err
 }
 
 func monstroMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "SAI DA JAULA")
+	message := "SAI DA JAULA"
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err := s.ChannelMessageSend(m.ChannelID, message)
 	return err
 }
 
 func hszMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	_, err := s.ChannelMessageSend(m.ChannelID, "\"vou só levar um colchao na sogra, volto em 15 min\"")
+	message := "\"vou só levar um colchao na sogra, volto em 15 min\""
+	common.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err := s.ChannelMessageSend(m.ChannelID, message)
 	return err
 }
 
 func boraMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	message := ""
 	max := 100
 	min := 1
-
 	randomNum := rand.Intn(max - min) + min
 
 	if randomNum < 25 {
-		_, err := s.ChannelMessageSend(m.ChannelID, "to on.")
-		return err
+		message = "to on."
 	}
 
 	if randomNum > 25 && randomNum < 50 {
-		_, err := s.ChannelMessageSend(m.ChannelID, "vitor disse que em 5 min ta entrando")
-		return err
+		message = "vitor disse que em 5 min ta entrando"
 	}
 
 	if randomNum > 50 && randomNum < 75 {
-		_, err := s.ChannelMessageSend(m.ChannelID, "\"nunca mais jogo cs\"")
-		return err
+		message = "\"nunca mais jogo cs\""
 	}
 
 	if randomNum > 75 {
-		_, err := s.ChannelMessageSend(m.ChannelID, "hoje tem")
+		message = "hoje tem"
+	}
+
+	if message != "" {
+		common.InfoLog(fmt.Sprintf("sending message: %s", message))
+		_, err := s.ChannelMessageSend(m.ChannelID, message)
 		return err
 	}
 
+	common.WarningLog("a problem happened when identifying a message to send. No message has been sent")
 	return nil
 }

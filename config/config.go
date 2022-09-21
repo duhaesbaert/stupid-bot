@@ -14,8 +14,8 @@ var (
 )
 
 type configStruct struct {
-	Token     string `json : "Token"`
-	BotPrefix string `json : "BotPrefix"`
+	Token     string `json:"Token"`
+	BotPrefix string `json:"BotPrefix"`
 }
 
 // ReadConfig reads the config.json file on the directory to use the bot information for connection.
