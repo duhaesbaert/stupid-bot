@@ -95,6 +95,13 @@ func messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		strings.Contains(m.Content, "?") {
 		return boraMessage(s, m)
 	}
-	//vou levar um colchao na sogra volto em 15
+
+	if strings.Contains(m.Content, "monstro"){
+		return monstroMessage(s, m)
+	}
+
+	if strings.Contains(m.Content, "hess") || strings.Contains(m.Content, "hsz") || strings.Contains(m.Content, "geferson") {
+		hszMessage(s, m)
+	}
 	return nil
 }

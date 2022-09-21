@@ -44,6 +44,11 @@ func monstroMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	return err
 }
 
+func hszMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	_, err := s.ChannelMessageSend(m.ChannelID, "\"vou só levar um colchao na sogra, volto em 15 min\"")
+	return err
+}
+
 func boraMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	max := 100
 	min := 1
