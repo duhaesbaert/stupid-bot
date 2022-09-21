@@ -20,6 +20,7 @@ type configStruct struct {
 
 // ReadConfig reads the config.json file on the directory to use the bot information for connection.
 func ReadConfig() error {
+	common.NormalizedLog("reading config.json file to load configurations", common.Info)
 	file, err := ioutil.ReadFile("./config.json")
 	if err != nil {
 		common.NormalizedLog(err.Error(), common.Error)
