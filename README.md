@@ -17,7 +17,9 @@ Example:
 }
 ````
 
+One important setting when creating your bot on discord, is to make sure the Message Content Intent is flagged, so the bot can read messages from your channels.
+
 ## How the bot works
 This bot uses a pseudo-random algorithm, which will 50% of the time reply back into your messages. There are some prefixed messages which can be used or changed, but as of this moment it is all hardcoded into the bot package.
 
-ATM this bot is not reading messages from your channels, only messages sent directly to the BOT.
+
