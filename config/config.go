@@ -2,56 +2,55 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"stupid-bot/common"
 )
 
 var (
-	config *ConfigStruct // value from config.json
+	// value from config.json
 )
 
 type ConfigStruct struct {
-	Token    	string `json:"Token"`
-	BotPrefix	string `json:"BotPrefix"`
-	log			common.Logger
+	Token    		string `json:"Token"`
+	BotPrefix		string `json:"BotPrefix"`
+	log				common.Logger
+	BotListening	bool
 }
 
 // NewConfig reads the config.json file contained on the directory, and instantiates a new ConfigStruct to be used by the bot.
 func NewConfig(log common.Logger) (*ConfigStruct, error) {
-	log = log
+	var config *ConfigStruct
 
 	log.InfoLog("reading config.json file to load configurations")
-	file, err := ioutil.ReadFile("./config.json")
+	config, err := readConfig(config)
 	if err != nil {
-		log.ErrorLog(err.Error())
-		return &ConfigStruct{}, err
+		log.ErrorLog(fmt.Sprintf("error loading config from json file: %s", err.Error()))
+		return config, err
 	}
-	log.InfoLog("config.json loaded successfully")
+	log.InfoLog("configuration loaded from json file successfully")
 
-	err = json.Unmarshal(file, &config)
-	if err != nil {
-		return &ConfigStruct{}, err
-	}
-
-	log.InfoLog("bot configuration loaded from config files")
+	config.log = log
+	log.InfoLog("all configurations loaded successfully")
 	return config, nil
 }
 
-// UpdateConfig reads the config.json file on the directory to use the bot information for connection.
-func (cs ConfigStruct) UpdateConfig() (*ConfigStruct, error) {
-	cs.log.InfoLog("reading config.json file to load configurations")
+func readConfig(config *ConfigStruct) (*ConfigStruct, error) {
 	file, err := ioutil.ReadFile("./config.json")
 	if err != nil {
-		cs.log.ErrorLog(err.Error())
 		return &ConfigStruct{}, err
 	}
-	cs.log.InfoLog("config.json loaded successfully")
 
 	err = json.Unmarshal(file, &config)
 	if err != nil {
 		return &ConfigStruct{}, err
 	}
-
-	cs.log.InfoLog("bot configuration loaded from config files")
 	return config, nil
+}
+
+func (cs ConfigStruct) PrintConfiguration() {
+	cs.log.DebugLog("Configurations:")
+	cs.log.DebugLog("Token: " + cs.Token)
+	cs.log.DebugLog("Prefix: " + cs.BotPrefix)
+	cs.log.DebugLog(fmt.Sprintf("Listening: %b", cs.BotListening))
 }

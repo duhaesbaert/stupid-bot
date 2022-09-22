@@ -17,12 +17,14 @@ func (b Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.Username == "chinela" {
 		if m.Content == "/stop_listening" {
 			b.stopListening()
+			return
 		} else if m.Content == "/start_listening" {
 			b.startListening()
+			return
 		}
 	}
 
-	if b.botListening {
+	if b.config.BotListening {
 		if m.Content == "" {
 			content, attachments, err := b.channelMessageLookup(s, m)
 			if err != nil {

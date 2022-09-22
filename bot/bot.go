@@ -10,15 +10,13 @@ import (
 type Bot struct {
 	BotId string
 	goBot *discordgo.Session
-	botListening bool
 	log common.Logger
 	config *config.ConfigStruct
 }
 
 // NewBot instantiates and returns a new Bot struct.
-func NewBot(log common.Logger, config *config.ConfigStruct, listening bool) Bot {
+func NewBot(log common.Logger, config *config.ConfigStruct) Bot {
 	return Bot{
-		botListening: listening,
 		log: log,
 		config: config,
 	}
@@ -59,10 +57,12 @@ func (b Bot) Start() {
 
 // stopListening switches teh flag botListening, from Bot struct to false.
 func (b Bot) stopListening() {
-	b.botListening = false
+	b.log.InfoLog("disabling listening on bot")
+	b.config.BotListening = false
 }
 
 // startListening switches teh flag botListening, from Bot struct to true.
 func (b Bot) startListening() {
-	b.botListening = true
+	b.log.InfoLog("enabling listening on bot")
+	b.config.BotListening = true
 }

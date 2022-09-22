@@ -16,11 +16,12 @@ func main() {
 		log.ErrorLog(err.Error())
 		return
 	}
+	config.PrintConfiguration()
 
-	botListening := true
-	myBot := bot.NewBot(log, config, botListening)
+	myBot := bot.NewBot(log, config)
 	myBot.Start()
 
 	<-make(chan struct{})
 	return
 }
+
