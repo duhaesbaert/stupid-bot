@@ -32,7 +32,6 @@ func (b Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 
-			b.log.InfoLog(content)
 			m.Content = content
 			m.Attachments = attachments
 		}
