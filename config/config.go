@@ -7,37 +7,51 @@ import (
 )
 
 var (
-	Token     string // value of Token from config.json
-	BotPrefix string // value of BotPrefix from config.json
-
-	config *configStruct // value from config.json
+	config *ConfigStruct // value from config.json
 )
 
-type configStruct struct {
-	Token     string `json:"Token"`
-	BotPrefix string `json:"BotPrefix"`
+type ConfigStruct struct {
+	Token    	string `json:"Token"`
+	BotPrefix	string `json:"BotPrefix"`
+	log			common.Logger
 }
 
-// ReadConfig reads the config.json file on the directory to use the bot information for connection.
-func ReadConfig() error {
-	log := common.NewLogger()
+// NewConfig reads the config.json file contained on the directory, and instantiates a new ConfigStruct to be used by the bot.
+func NewConfig(log common.Logger) (*ConfigStruct, error) {
+	log = log
 
 	log.InfoLog("reading config.json file to load configurations")
 	file, err := ioutil.ReadFile("./config.json")
 	if err != nil {
 		log.ErrorLog(err.Error())
-		return err
+		return &ConfigStruct{}, err
 	}
 	log.InfoLog("config.json loaded successfully")
 
 	err = json.Unmarshal(file, &config)
 	if err != nil {
-		log.ErrorLog(err.Error())
-		return err
+		return &ConfigStruct{}, err
 	}
 
-	Token = config.Token
-	BotPrefix = config.BotPrefix
 	log.InfoLog("bot configuration loaded from config files")
-	return nil
+	return config, nil
+}
+
+// UpdateConfig reads the config.json file on the directory to use the bot information for connection.
+func (cs ConfigStruct) UpdateConfig() (*ConfigStruct, error) {
+	cs.log.InfoLog("reading config.json file to load configurations")
+	file, err := ioutil.ReadFile("./config.json")
+	if err != nil {
+		cs.log.ErrorLog(err.Error())
+		return &ConfigStruct{}, err
+	}
+	cs.log.InfoLog("config.json loaded successfully")
+
+	err = json.Unmarshal(file, &config)
+	if err != nil {
+		return &ConfigStruct{}, err
+	}
+
+	cs.log.InfoLog("bot configuration loaded from config files")
+	return config, nil
 }

@@ -9,14 +9,16 @@ import(
 // main initializes the bot, reading the necessary configuration respectively starts the bot.
 func main() {
 	log := common.NewLogger()
+
 	log.InfoLog("initializing bot...")
-	err := config.ReadConfig()
+	config, err := config.NewConfig(log)
 	if err != nil {
 		log.ErrorLog(err.Error())
 		return
 	}
 
-	myBot := bot.NewBot(true, log)
+	botListening := true
+	myBot := bot.NewBot(log, config, botListening)
 	myBot.Start()
 
 	<-make(chan struct{})

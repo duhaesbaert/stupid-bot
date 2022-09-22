@@ -42,6 +42,7 @@ func (b Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
+// channelMessageLookup uses the channel id and message id to find the received message and read it's content.
 func (b Bot) channelMessageLookup(s *discordgo.Session, m *discordgo.MessageCreate) (string, []*discordgo.MessageAttachment, error) {
 	chanMsgs, err := s.ChannelMessages(m.ChannelID, 1, "", "", m.ID)
 	if err != nil {
@@ -52,6 +53,7 @@ func (b Bot) channelMessageLookup(s *discordgo.Session, m *discordgo.MessageCrea
 	return chanMsgs[0].Content, chanMsgs[0].Attachments, err
 }
 
+// messageSelector executes the 50-50 pseudo-randomized value to reply or not with a message for the received message on the channel.
 func (b Bot) messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	b.log.DebugLog(m.Author.Username)
 	b.log.DebugLog(fmt.Sprintf("found message on thread: %s", m.Content))
@@ -61,7 +63,7 @@ func (b Bot) messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) e
 		err = b.contentBasedInteraction(s, m)
 		if err != nil {
 			if err.Error() == "no_content_based_interaction_found" {
-				err = b.authorBasedInteractions(s, m)
+				err = b.authorBasedInteraction(s, m)
 			}
 		}
 
@@ -76,6 +78,7 @@ func (b Bot) messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) e
 	return err
 }
 
+// contentBasedInteraction based on messages received sends a new different message, regardless of who is the author.
 func (b Bot) contentBasedInteraction(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	if strings.Contains(m.Content, "cs") {
 		return b.csgoMessage(s, m)
@@ -120,7 +123,8 @@ func (b Bot) contentBasedInteraction(s *discordgo.Session, m *discordgo.MessageC
 	return fmt.Errorf("no_content_based_interaction_found")
 }
 
-func (b Bot) authorBasedInteractions(s *discordgo.Session, m *discordgo.MessageCreate) error {
+// authorBasedInteraction based on who sent the message into the channel, replies back with some specific content.
+func (b Bot) authorBasedInteraction(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	if strings.Contains(m.Author.Username, "chinela"){
 		return b.chinelaMessage(s, m)
 	}

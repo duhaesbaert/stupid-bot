@@ -12,12 +12,15 @@ type Bot struct {
 	goBot *discordgo.Session
 	botListening bool
 	log common.Logger
+	config *config.ConfigStruct
 }
 
-func NewBot(listening bool, log common.Logger) Bot {
+// NewBot instantiates and returns a new Bot struct.
+func NewBot(log common.Logger, config *config.ConfigStruct, listening bool) Bot {
 	return Bot{
 		botListening: listening,
 		log: log,
+		config: config,
 	}
 }
 
@@ -27,7 +30,7 @@ func (b Bot) Start() {
 	b.log.InfoLog("starting bot")
 
 	// creates a new session for the bot using the respective Token.
-	bot, err := discordgo.New("Bot " + config.Token)
+	bot, err := discordgo.New("Bot " + b.config.Token)
 	if err != nil {
 		b.log.ErrorLog(fmt.Sprintf("error creating bot session on Discord: %s", err.Error()))
 		return
@@ -54,10 +57,12 @@ func (b Bot) Start() {
 	b.log.InfoLog("bot running")
 }
 
+// stopListening switches teh flag botListening, from Bot struct to false.
 func (b Bot) stopListening() {
 	b.botListening = false
 }
 
+// startListening switches teh flag botListening, from Bot struct to true.
 func (b Bot) startListening() {
 	b.botListening = true
 }
