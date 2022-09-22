@@ -14,14 +14,9 @@ func (b Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.Author.Username == "chinela" {
-		if m.Content == "/stop_listening" {
-			b.stopListening()
-			return
-		} else if m.Content == "/start_listening" {
-			b.startListening()
-			return
-		}
+	if b.isAction(m) {
+		b.executeActions(s, m)
+		return
 	}
 
 	if b.config.BotListening {
@@ -41,6 +36,10 @@ func (b Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 			b.log.ErrorLog(fmt.Sprintf("could not sent message: %s", err.Error()))
 		}
 	}
+}
+
+func (b Bot) isAction(m *discordgo.MessageCreate) bool {
+	return strings.HasPrefix(m.Content, "/")
 }
 
 // channelMessageLookup uses the channel id and message id to find the received message and read it's content.
@@ -81,50 +80,50 @@ func (b Bot) messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) e
 
 // contentBasedInteraction based on messages received sends a new different message, regardless of who is the author.
 func (b Bot) contentBasedInteraction(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	if strings.Contains(m.Content, "cs") {
+	if strings.Contains(strings.ToLower(m.Content), "cs") {
 		return b.csgoMessage(s, m)
 	}
 
-	if strings.Contains(m.Content, "pubg"){
+	if strings.Contains(strings.ToLower(m.Content), "pubg"){
 		return b.pubgMessage(s, m)
 	}
 
-	if strings.Contains(m.Content, "bora") ||
-		strings.Contains(m.Content, "online") ||
-		strings.Contains(m.Content, "vamo") ||
-		strings.Contains(m.Content, "voltei") {
+	if strings.Contains(strings.ToLower(m.Content), "bora") ||
+		strings.Contains(strings.ToLower(m.Content), "online") ||
+		strings.Contains(strings.ToLower(m.Content), "vamo") ||
+		strings.Contains(strings.ToLower(m.Content), "voltei") {
 		return b.boraMessage(s, m)
 	}
 
-	if strings.Contains(m.Content, "gamersclub") {
+	if strings.Contains(strings.ToLower(m.Content), "gamersclub") {
 		return b.gamersclubMessage(s, m)
 	}
 
-	if strings.Contains(m.Content, "kim") {
+	if strings.Contains(strings.ToLower(m.Content), "kim") {
 		return b.kimMessage(s, m)
 	}
 
-	if strings.Contains(m.Content, "schenk") || strings.Contains(m.Content, "marcel") {
+	if strings.Contains(strings.ToLower(m.Content), "schenk") || strings.Contains(strings.ToLower(m.Content), "marcel") {
 		return b.schenkMessage(s,m)
 	}
 
-	if strings.Contains(m.Content, "wolke") || strings.Contains(m.Content, "vitor"){
+	if strings.Contains(strings.ToLower(m.Content), "wolke") || strings.Contains(strings.ToLower(m.Content), "vitor"){
 		return b.vitorMentionedMessage(s, m)
 	}
 
-	if strings.Contains(m.Content, "bob") {
+	if strings.Contains(strings.ToLower(m.Content), "bob") {
 		return b.bobMessage(s, m)
 	}
 
-	if strings.Contains(m.Content, "monstro"){
+	if strings.Contains(strings.ToLower(m.Content), "monstro"){
 		return b.monstroMessage(s, m)
 	}
 
-	if strings.Contains(m.Content, "hess") || strings.Contains(m.Content, "hsz") || strings.Contains(m.Content, "geferson") {
+	if strings.Contains(strings.ToLower(m.Content), "hess") || strings.Contains(strings.ToLower(m.Content), "hsz") || strings.Contains(strings.ToLower(m.Content), "geferson") {
 		return b.hszMessage(s, m)
 	}
 
-	if strings.EqualFold(m.Content, "F") || strings.EqualFold(m.Content, "f") {
+	if strings.EqualFold(strings.ToLower(m.Content), "f") {
 		return b.fMessage(s, m)
 	}
 
@@ -148,4 +147,14 @@ func (b Bot) authorBasedInteraction(s *discordgo.Session, m *discordgo.MessageCr
 
 	b.log.WarningLog("no author based interactions found")
 	return fmt.Errorf("no_author_based_interaction_found")
+}
+
+func (b Bot) executeActions(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if strings.ToLower(m.Content) == "/stop_listening" {
+		b.stopListening(m)
+	} else if strings.ToLower(m.Content) == "/start_listening" {
+		b.startListening(m)
+	} else if strings.HasPrefix(strings.ToLower(m.Content), "/play") {
+		b.callForGaming(s, m)
+	}
 }

@@ -54,15 +54,3 @@ func (b Bot) Start() {
 
 	b.log.InfoLog("bot running")
 }
-
-// stopListening switches teh flag botListening, from Bot struct to false.
-func (b Bot) stopListening() {
-	b.log.InfoLog("disabling listening on bot")
-	b.config.BotListening = false
-}
-
-// startListening switches teh flag botListening, from Bot struct to true.
-func (b Bot) startListening() {
-	b.log.InfoLog("enabling listening on bot")
-	b.config.BotListening = true
-}
