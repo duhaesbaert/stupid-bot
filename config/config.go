@@ -2,39 +2,55 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"stupid-bot/common"
 )
 
 var (
-	Token     string // value of Token from config.json
-	BotPrefix string // value of BotPrefix from config.json
-
-	config *configStruct // value from config.json
+	// value from config.json
 )
 
-type configStruct struct {
-	Token     string `json : "Token"`
-	BotPrefix string `json : "BotPrefix"`
+type ConfigStruct struct {
+	Token    		string `json:"Token"`
+	BotPrefix		string `json:"BotPrefix"`
+	log				common.Logger
+	BotListening	bool
 }
 
-// ReadConfig reads the config.json file on the directory to use the bot information for connection.
-func ReadConfig() error {
+// NewConfig reads the config.json file contained on the directory, and instantiates a new ConfigStruct to be used by the bot.
+func NewConfig(log common.Logger) (*ConfigStruct, error) {
+	var config *ConfigStruct
+
+	log.InfoLog("reading config.json file to load configurations")
+	config, err := readConfig(config)
+	if err != nil {
+		log.ErrorLog(fmt.Sprintf("error loading config from json file: %s", err.Error()))
+		return config, err
+	}
+	log.InfoLog("configuration loaded from json file successfully")
+
+	config.log = log
+	log.InfoLog("all configurations loaded successfully")
+	return config, nil
+}
+
+func readConfig(config *ConfigStruct) (*ConfigStruct, error) {
 	file, err := ioutil.ReadFile("./config.json")
 	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
-		return err
+		return &ConfigStruct{}, err
 	}
-	common.NormalizedLog("config.json loaded successfully", common.Info)
 
 	err = json.Unmarshal(file, &config)
 	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
-		return err
+		return &ConfigStruct{}, err
 	}
+	return config, nil
+}
 
-	Token = config.Token
-	BotPrefix = config.BotPrefix
-	common.NormalizedLog("bot configuration loaded from config files", common.Info)
-	return nil
+func (cs ConfigStruct) PrintConfiguration() {
+	cs.log.DebugLog("Configurations:")
+	cs.log.DebugLog("Token: " + cs.Token)
+	cs.log.DebugLog("Prefix: " + cs.BotPrefix)
+	cs.log.DebugLog(fmt.Sprintf("Listening: %b", cs.BotListening))
 }

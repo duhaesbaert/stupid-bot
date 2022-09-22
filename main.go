@@ -8,14 +8,20 @@ import(
 
 // main initializes the bot, reading the necessary configuration respectively starts the bot.
 func main() {
-	err := config.ReadConfig()
+	log := common.NewLogger()
+
+	log.InfoLog("initializing bot...")
+	config, err := config.NewConfig(log)
 	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
+		log.ErrorLog(err.Error())
 		return
 	}
+	config.PrintConfiguration()
 
-	bot.Start()
+	myBot := bot.NewBot(log, config)
+	myBot.Start()
 
 	<-make(chan struct{})
 	return
 }
+

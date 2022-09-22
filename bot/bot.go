@@ -1,52 +1,68 @@
 package bot
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"stupid-bot/common"
 	"stupid-bot/config"
 )
 
-var (
+type Bot struct {
 	BotId string
 	goBot *discordgo.Session
-)
-
-// Start initializes the bot functionality, using the configuration already loaded from the config.json.
-func Start() {
-	// creates a new session for the bot using the respective Token.
-	goBot, err := discordgo.New("Bot " + config.Token)
-	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
-		return
-	}
-
-	u, err := goBot.User("@me")
-	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
-		return
-	}
-
-	BotId = u.ID
-
-	// Adding handler function to handle our messages using AddHandler from discordgo package. We will declare messageHandler function later.
-	goBot.AddHandler(messageHandler)
-
-
-	err = goBot.Open()
-	if err != nil {
-		common.NormalizedLog(err.Error(), common.Error)
-		return
-	}
-
-	common.NormalizedLog("bot running", common.Info)
+	log common.Logger
+	config *config.ConfigStruct
 }
 
-// messageHandler watches for messages sent on the discord channel by other users and interacts with them, either by sending new messages or by performing actions.
-func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == BotId {
+// NewBot instantiates and returns a new Bot struct.
+func NewBot(log common.Logger, config *config.ConfigStruct) Bot {
+	return Bot{
+		log: log,
+		config: config,
+	}
+}
+
+// Start initializes the bot functionality, using the configuration already loaded from the config.json.
+func (b Bot) Start() {
+	b.log = common.NewLogger()
+	b.log.InfoLog("starting bot")
+
+	// creates a new session for the bot using the respective Token.
+	bot, err := discordgo.New("Bot " + b.config.Token)
+	if err != nil {
+		b.log.ErrorLog(fmt.Sprintf("error creating bot session on Discord: %s", err.Error()))
 		return
 	}
-	if m.Content == "ping" {
-		_, _ = s.ChannelMessageSend(m.ChannelID, "pong")
+	b.goBot = bot
+
+
+	b.log.InfoLog("assigning user to bot")
+	u, err := b.goBot.User("@me")
+	if err != nil {
+		b.log.ErrorLog(err.Error())
+		return
 	}
+	b.BotId = u.ID
+
+	b.goBot.AddHandler(b.messageHandler)
+	b.log.InfoLog("connecting bot to discord")
+	err = b.goBot.Open()
+	if err != nil {
+		b.log.ErrorLog(fmt.Sprintf("error opening connection: %s", err.Error()))
+		return
+	}
+
+	b.log.InfoLog("bot running")
+}
+
+// stopListening switches teh flag botListening, from Bot struct to false.
+func (b Bot) stopListening() {
+	b.log.InfoLog("disabling listening on bot")
+	b.config.BotListening = false
+}
+
+// startListening switches teh flag botListening, from Bot struct to true.
+func (b Bot) startListening() {
+	b.log.InfoLog("enabling listening on bot")
+	b.config.BotListening = true
 }
