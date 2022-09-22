@@ -11,6 +11,7 @@ const (
 	error		string = "ERROR"
 	warning		string = "WARN"
 	info 		string = "INFO"
+	debug		string = "DEBUG"
 )
 
 // NewLogger retuns a new instance of Logger, which encapsulates
@@ -32,6 +33,10 @@ func (l Logger) WarningLog(message string) {
 // InfoLog logs a normalized message of log level info
 func (l Logger) InfoLog(message string) {
 	l.logMessage(message, info)
+}
+
+func (l Logger) DebugLog(message string) {
+	l.logMessage(message, debug)
 }
 
 // NormalizedLog returns normalized message using the indicated log level.

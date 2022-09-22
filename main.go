@@ -16,7 +16,8 @@ func main() {
 		return
 	}
 
-	bot.Start()
+	myBot := bot.NewBot(true, log)
+	myBot.Start()
 
 	<-make(chan struct{})
 	return
