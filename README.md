@@ -2,7 +2,7 @@
 This is a small Discord bot written in Go for the sole purpose of having a bot of my own.
 
 ## Configuration
-For this bot to work, it is necessary to add a config.json file on the same directory, which will load the configuration from. It is necessary to add three specific fields into this file:
+For this bot to work, it is necessary to add a ``config.json`` file on the same directory, which will load the configuration from. It is necessary to add three specific fields into this file:
 
 1. Token: This is your bot token, that can be found at ``discord.gg/Developers``
 2. BotPrefix: The prefix of your bot
@@ -19,3 +19,5 @@ Example:
 
 ## How the bot works
 This bot uses a pseudo-random algorithm, which will 50% of the time reply back into your messages. There are some prefixed messages which can be used or changed, but as of this moment it is all hardcoded into the bot package.
+
+ATM this bot is not reading messages from your channels, only messages sent directly to the BOT.
