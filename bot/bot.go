@@ -11,53 +11,55 @@ import (
 var (
 	BotId string
 	goBot *discordgo.Session
+	log common.Logger
 )
 
 // Start initializes the bot functionality, using the configuration already loaded from the config.json.
 func Start() {
-	common.InfoLog("initializing bot")
+	log = common.NewLogger()
+	log.InfoLog("initializing bot")
 	// creates a new session for the bot using the respective Token.
 	goBot, err := discordgo.New("Bot " + config.Token)
 	if err != nil {
-		common.ErrorLog(fmt.Sprintf("error creating bot session on Discord: %s", err.Error()))
+		log.ErrorLog(fmt.Sprintf("error creating bot session on Discord: %s", err.Error()))
 		return
 	}
 
-	common.InfoLog("assigning user to bot")
+	log.InfoLog("assigning user to bot")
 	u, err := goBot.User("@me")
 	if err != nil {
-		common.ErrorLog(err.Error())
+		log.ErrorLog(err.Error())
 		return
 	}
 	BotId = u.ID
 
 	goBot.AddHandler(messageHandler)
 
-	common.InfoLog("connecting bot to discord")
+	log.InfoLog("connecting bot to discord")
 	err = goBot.Open()
 	if err != nil {
-		common.ErrorLog(fmt.Sprintf("error opening connection: %s", err.Error()))
+		log.ErrorLog(fmt.Sprintf("error opening connection: %s", err.Error()))
 		return
 	}
 
-	common.InfoLog("bot running")
+	log.InfoLog("bot running")
 }
 
 // messageHandler watches for messages sent on the discord channel by other users and interacts with them, either by sending new messages or by performing actions.
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == BotId {
-		common.WarningLog("message sent by bot -> ignoring")
+		log.WarningLog("message sent by bot -> ignoring")
 		return
 	}
 
 	err := messageSelector(s, m)
 	if err != nil {
-		common.ErrorLog(fmt.Sprintf("could not sent message: %s", err.Error()))
+		log.ErrorLog(fmt.Sprintf("could not sent message: %s", err.Error()))
 	}
 }
 
 func messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	common.InfoLog(fmt.Sprintf("found message on thread: %s", m.Content))
+	log.InfoLog(fmt.Sprintf("found message on thread: %s", m.Content))
 
 	if strings.Contains(m.Content, "cs") {
 		return csgoMessage(s, m)
@@ -107,6 +109,6 @@ func messageSelector(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		return hszMessage(s, m)
 	}
 
-	common.WarningLog("no message has been identified to be sent.")
+	log.WarningLog("no message has been identified to be sent.")
 	return nil
 }

@@ -8,9 +8,11 @@ import(
 
 // main initializes the bot, reading the necessary configuration respectively starts the bot.
 func main() {
+	log := common.NewLogger()
+	log.InfoLog("initializing bot...")
 	err := config.ReadConfig()
 	if err != nil {
-		common.ErrorLog(err.Error())
+		log.ErrorLog(err.Error())
 		return
 	}
 
