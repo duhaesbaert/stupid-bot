@@ -100,6 +100,14 @@ func (b Bot) contentBasedInteraction(s *discordgo.Session, m *discordgo.MessageC
 		return b.gamersclubMessage(s, m)
 	}
 
+	if strings.Contains(m.Content, "kim") {
+		return b.kimMessage(s, m)
+	}
+
+	if strings.Contains(m.Content, "schenk") || strings.Contains(m.Content, "marcel") {
+		return b.schenkMessage(s,m)
+	}
+
 	if strings.Contains(m.Content, "wolke") || strings.Contains(m.Content, "vitor"){
 		return b.vitorMentionedMessage(s, m)
 	}

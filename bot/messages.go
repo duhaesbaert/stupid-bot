@@ -114,3 +114,17 @@ func (b Bot) pubgMessage(s *discordgo.Session, m *discordgo.MessageCreate) error
 	_, err := s.ChannelMessageSendReply(m.ChannelID, message, &discordgo.MessageReference{ChannelID: m.ChannelID, MessageID: m.Message.ID})
 	return err
 }
+
+func (b Bot) kimMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	message := "nosso muambeiro favorito"
+	b.log.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err := s.ChannelMessageSendReply(m.ChannelID, message, &discordgo.MessageReference{ChannelID: m.ChannelID, MessageID: m.Message.ID})
+	return err
+}
+
+func (b Bot) schenkMessage(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	message := "foi pra germania e nos esqueceu"
+	b.log.InfoLog(fmt.Sprintf("sending message: %s", message))
+	_, err := s.ChannelMessageSendReply(m.ChannelID, message, &discordgo.MessageReference{ChannelID: m.ChannelID, MessageID: m.Message.ID})
+	return err
+}
