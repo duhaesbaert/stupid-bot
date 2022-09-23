@@ -38,6 +38,8 @@ func (b Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
+// isAction returns a boolean value validating if this is an action or not.
+// The message is considered an action if it has a "/" on the beginning.
 func (b Bot) isAction(m *discordgo.MessageCreate) bool {
 	return strings.HasPrefix(m.Content, "/")
 }
@@ -84,7 +86,7 @@ func (b Bot) contentBasedInteraction(s *discordgo.Session, m *discordgo.MessageC
 		return b.csgoMessage(s, m)
 	}
 
-	if strings.Contains(strings.ToLower(m.Content), "pubg"){
+	if strings.Contains(strings.ToLower(m.Content), "pubg") {
 		return b.pubgMessage(s, m)
 	}
 
@@ -104,10 +106,10 @@ func (b Bot) contentBasedInteraction(s *discordgo.Session, m *discordgo.MessageC
 	}
 
 	if strings.Contains(strings.ToLower(m.Content), "schenk") || strings.Contains(strings.ToLower(m.Content), "marcel") {
-		return b.schenkMessage(s,m)
+		return b.schenkMessage(s, m)
 	}
 
-	if strings.Contains(strings.ToLower(m.Content), "wolke") || strings.Contains(strings.ToLower(m.Content), "vitor"){
+	if strings.Contains(strings.ToLower(m.Content), "wolke") || strings.Contains(strings.ToLower(m.Content), "vitor") {
 		return b.vitorMentionedMessage(s, m)
 	}
 
@@ -115,7 +117,7 @@ func (b Bot) contentBasedInteraction(s *discordgo.Session, m *discordgo.MessageC
 		return b.bobMessage(s, m)
 	}
 
-	if strings.Contains(strings.ToLower(m.Content), "monstro"){
+	if strings.Contains(strings.ToLower(m.Content), "monstro") {
 		return b.monstroMessage(s, m)
 	}
 
@@ -133,7 +135,7 @@ func (b Bot) contentBasedInteraction(s *discordgo.Session, m *discordgo.MessageC
 
 // authorBasedInteraction based on who sent the message into the channel, replies back with some specific content.
 func (b Bot) authorBasedInteraction(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	if strings.Contains(m.Author.Username, "chinela"){
+	if strings.Contains(m.Author.Username, "chinela") {
 		return b.chinelaMessage(s, m)
 	}
 
@@ -149,6 +151,7 @@ func (b Bot) authorBasedInteraction(s *discordgo.Session, m *discordgo.MessageCr
 	return fmt.Errorf("no_author_based_interaction_found")
 }
 
+// executeActions identifies which command has been written by the member, and requests for the responsible function.
 func (b Bot) executeActions(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if strings.ToLower(m.Content) == "/stop_listening" {
 		b.stopListening(m)
@@ -156,5 +159,7 @@ func (b Bot) executeActions(s *discordgo.Session, m *discordgo.MessageCreate) {
 		b.startListening(m)
 	} else if strings.HasPrefix(strings.ToLower(m.Content), "/play") {
 		b.callForGaming(s, m)
+	} else if strings.HasPrefix(strings.ToLower(m.Content), "/poll") {
+		b.startPoll(s, m)
 	}
 }
