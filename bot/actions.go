@@ -15,6 +15,16 @@ type BotActions struct {
 	m   *discordgo.MessageCreate
 }
 
+// NewBotActions instantiates a new BotActions struct to be used for all actions.
+func NewBotActions(bot Bot, log common.Logger, s *discordgo.Session, m *discordgo.MessageCreate) BotActions {
+	return BotActions{
+		bot: bot,
+		log: log,
+		s:   s,
+		m:   m,
+	}
+}
+
 // executeActions identifies which command has been written by the member, and requests for the responsible function.
 func (b BotActions) executeActions() {
 	if strings.ToLower(b.m.Content) == "/stop_listening" {
