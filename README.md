@@ -27,7 +27,8 @@ List of commands currently available:
 ````
 /stop_listening -> this will make the bot stop listening(reading) the conversations and will not longer interact with it.
 /start_listening -> makes the bot start listening(reading) the conversations and interact with it accordingly.
-/play {game_name} -> for a pre-set of games, the bot will react with some specific message and put mention @here at the discord channel, inviting the users to play
+/play {game_name} -> for a pre-set of games, the bot will react with some specific message and put mention @here at the discord channel, inviting the users to play.
+/poll {topic} -> This will add a poll, that will last for 5 minutes and show up up and down. After the 5 minutes have passed, the bot will post back the results into the channel.
 ````
 
 
