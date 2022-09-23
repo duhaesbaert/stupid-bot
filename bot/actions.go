@@ -77,7 +77,7 @@ func (b Bot) startPoll(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	timer := common.Newtimer(1)
+	timer := common.Newtimer(5)
 	showTime := timer.ShowNormalizedTime()
 
 	msgEmbed := generatePollEmbed(pollMessage, m.Author.Username, m.Author.AvatarURL(""), showTime)
