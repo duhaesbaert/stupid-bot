@@ -14,24 +14,13 @@ func (b Bot) messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if b.isAction(m.Content) {
-		ba := BotActions{
-			bot: b,
-			log: b.log,
-			s:   s,
-			m:   m,
-		}
+		ba := NewBotActions(b, b.log, s, m)
 		ba.executeActions()
 		return
 	}
 
 	if b.config.BotListening {
-		bm := BotMessages{
-			bot: b,
-			log: b.log,
-			s:   s,
-			m:   m,
-		}
-
+		bm := NewBotMessages(b, b.log, s, m)
 		err := bm.messageSelector()
 		if err != nil {
 			b.log.ErrorLog(fmt.Sprintf("could not sent message: %s", err.Error()))

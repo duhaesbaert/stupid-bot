@@ -15,6 +15,16 @@ type BotMessages struct {
 	m   *discordgo.MessageCreate
 }
 
+// NewBotMessages instantiates a new BotMessages struct to be used for all messages.
+func NewBotMessages(bot Bot, log common.Logger, s *discordgo.Session, m *discordgo.MessageCreate) BotMessages {
+	return BotMessages{
+		bot: bot,
+		log: log,
+		s:   s,
+		m:   m,
+	}
+}
+
 // messageSelector executes the 50-50 pseudo-randomized value to reply or not with a message for the received message on the channel.
 func (b BotMessages) messageSelector() error {
 	b.log.DebugLog(b.m.Author.Username)
