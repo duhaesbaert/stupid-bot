@@ -9,6 +9,8 @@ type Timer struct {
 	second int
 }
 
+// Newtimer initializes a Timer with the determined minutes. If the minutes passed as argument are greater than 59,
+// it will set minutes to 59 and seconds to 59.
 func Newtimer(minutes int) Timer {
 	seconds := 0
 	if minutes > 59 {
@@ -21,6 +23,7 @@ func Newtimer(minutes int) Timer {
 	}
 }
 
+// Countdown is exporting the functionality to subtract the time from the timer, 1 second each request.
 func (t Timer) Countdown() Timer {
 	return t.subtractSecond()
 }
@@ -60,6 +63,7 @@ func (t Timer) ShowNormalizedTime() string {
 	return fmt.Sprintf("%sm%ss", minutes, seconds)
 }
 
+// TimerMinutes returns the current minute from the Timer.
 func (t Timer) TimerMinutes() int {
 	return t.minute
 }

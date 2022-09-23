@@ -31,6 +31,7 @@ func NewConfig(log common.Logger) (*ConfigStruct, error) {
 	return config, nil
 }
 
+// readConfig reads the config.json file from the directory.
 func readConfig(config *ConfigStruct) (*ConfigStruct, error) {
 	file, err := ioutil.ReadFile("./config.json")
 	if err != nil {
@@ -44,6 +45,7 @@ func readConfig(config *ConfigStruct) (*ConfigStruct, error) {
 	return config, nil
 }
 
+// PrintConfiguration logs as DEBUY all the configuration set up on the bot.
 func (cs ConfigStruct) PrintConfiguration() {
 	cs.log.DebugLog("Configurations:")
 	cs.log.DebugLog("Token: " + cs.Token)

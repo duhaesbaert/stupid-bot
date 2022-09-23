@@ -28,6 +28,7 @@ func (b Bot) startListening(m *discordgo.MessageCreate) {
 	}
 }
 
+// callForGaming sends a message into the channel mentioning @here to notify all users.
 func (b Bot) callForGaming(s *discordgo.Session, m *discordgo.MessageCreate) {
 	b.log.InfoLog("calling everyone on server to play")
 	jogo := b.gameToPlay(m.Content)
@@ -40,6 +41,7 @@ func (b Bot) callForGaming(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
+// gameToPlay selects the message from a predefined list and returns.
 func (b Bot) gameToPlay(message string) string {
 	if strings.Contains(strings.ToLower(message), "cs") || strings.Contains(strings.ToLower(message), "csgo") {
 		return "UM CSZINHO"
@@ -59,10 +61,15 @@ func (b Bot) gameToPlay(message string) string {
 
 	return ""
 }
+
+// checkUserAllowed identifies if the user executing the action is allowed to.
 func (b Bot) checkUserAllowed(userid string) bool {
 	return userid == "343136401711169539"
 }
 
+// startPoll starts a poll into the channel, which will delete the message who requested the poll. The poll will be an EmbedMessage,
+// that last for 5 minutes and automatically adds votes for up and down. Once the 5 minutes have passed, the poll is deleted, and
+// the results are posted back into the channel.
 func (b Bot) startPoll(s *discordgo.Session, m *discordgo.MessageCreate) {
 	pollMessage := strings.Replace(strings.ToUpper(m.Content), "/POLL", "", -1)
 
@@ -104,10 +111,11 @@ func (b Bot) startPoll(s *discordgo.Session, m *discordgo.MessageCreate) {
 		b.log.ErrorLog(fmt.Sprintf("error adding reactions to poll: %s", err.Error()))
 	}
 
-	go b.deletePoll(pollMessage, m.Author, s, newPoll, timer)
+	go b.runPollTicker(pollMessage, m.Author, s, newPoll, timer)
 }
 
-func (b Bot) deletePoll(pollMessage string, originalAuthor *discordgo.User, s *discordgo.Session, m *discordgo.Message, timer common.Timer) {
+// runPollTicker is a ticker which controls the time and updates the message back into the channel, updating the timer for the poll to finish.
+func (b Bot) runPollTicker(pollMessage string, originalAuthor *discordgo.User, s *discordgo.Session, m *discordgo.Message, timer common.Timer) {
 	ticker := time.NewTicker(time.Second)
 	done := make(chan bool)
 
@@ -157,6 +165,7 @@ func (b Bot) deletePoll(pollMessage string, originalAuthor *discordgo.User, s *d
 	b.log.InfoLog("poll ticker stopped")
 }
 
+// generatePollEmbed generates a message object of poll.
 func generatePollEmbed(pollMessage, author, avatar, time string) *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
 		Type:        discordgo.EmbedTypeRich,
