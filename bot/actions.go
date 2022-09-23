@@ -115,10 +115,27 @@ func (b Bot) deletePoll(pollMessage string, originalAuthor *discordgo.User, s *d
 		for {
 			select {
 			case <-done:
-				err := s.ChannelMessageDelete(m.ChannelID, m.ID)
+				tup, err := s.MessageReactions(m.ChannelID, m.ID, "👍", 100, "", "")
+				if err != nil {
+					b.log.ErrorLog(fmt.Sprintf("error reading poll results: %s", err.Error()))
+				}
+
+				tdown, err := s.MessageReactions(m.ChannelID, m.ID, "👎", 100, "", "")
+				if err != nil {
+					b.log.ErrorLog(fmt.Sprintf("error reading poll results: %s", err.Error()))
+				}
+
+				err = s.ChannelMessageDelete(m.ChannelID, m.ID)
 				if err != nil {
 					b.log.ErrorLog(fmt.Sprintf("error deleting poll message: %s", err.Error()))
 				}
+
+				pollMessage = fmt.Sprintf("Resultado: **%s** -> %d 👍 contra %d 👎", pollMessage, len(tup)-1, len(tdown)-1)
+				_, err = s.ChannelMessageSend(m.ChannelID, pollMessage)
+				if err != nil {
+					b.log.ErrorLog(fmt.Sprintf("error sending poll results back to channel: %s", err.Error()))
+				}
+
 			case <-ticker.C:
 				timer = timer.Countdown()
 				_, err := s.ChannelMessageEditEmbed(m.ChannelID, m.ID, generatePollEmbed(pollMessage, originalAuthor.Username, originalAuthor.AvatarURL(""), timer.ShowNormalizedTime()))
