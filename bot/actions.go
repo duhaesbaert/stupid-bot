@@ -77,7 +77,7 @@ func (b Bot) startPoll(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	timer := common.Newtimer(5)
+	timer := common.Newtimer(1)
 	showTime := timer.ShowNormalizedTime()
 
 	msgEmbed := generatePollEmbed(pollMessage, m.Author.Username, m.Author.AvatarURL(""), showTime)
@@ -130,7 +130,7 @@ func (b Bot) deletePoll(pollMessage string, originalAuthor *discordgo.User, s *d
 					b.log.ErrorLog(fmt.Sprintf("error deleting poll message: %s", err.Error()))
 				}
 
-				pollMessage = fmt.Sprintf("Resultado: **%s** -> %d 👍 contra %d 👎", pollMessage, len(tup)-1, len(tdown)-1)
+				pollMessage = fmt.Sprintf("**%s** \n 👍 %d x %d 👎", pollMessage, len(tup)-1, len(tdown)-1)
 				_, err = s.ChannelMessageSend(m.ChannelID, pollMessage)
 				if err != nil {
 					b.log.ErrorLog(fmt.Sprintf("error sending poll results back to channel: %s", err.Error()))
