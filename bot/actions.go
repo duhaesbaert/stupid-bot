@@ -8,41 +8,61 @@ import (
 	"time"
 )
 
+type BotActions struct {
+	bot Bot
+	log common.Logger
+	s   *discordgo.Session
+	m   *discordgo.MessageCreate
+}
+
+// executeActions identifies which command has been written by the member, and requests for the responsible function.
+func (b BotActions) executeActions() {
+	if strings.ToLower(b.m.Content) == "/stop_listening" {
+		b.stopListening()
+	} else if strings.ToLower(b.m.Content) == "/start_listening" {
+		b.startListening()
+	} else if strings.HasPrefix(strings.ToLower(b.m.Content), "/play") {
+		b.callForGaming()
+	} else if strings.HasPrefix(strings.ToLower(b.m.Content), "/poll") {
+		b.startPoll()
+	}
+}
+
 // stopListening switches teh flag botListening, from Bot struct to false.
-func (b Bot) stopListening(m *discordgo.MessageCreate) {
-	if b.checkUserAllowed(m.Author.ID) {
+func (b BotActions) stopListening() {
+	if b.checkUserAllowed(b.m.Author.ID) {
 		b.log.InfoLog("disabling listening on bot")
-		b.config.BotListening = false
+		b.bot.config.BotListening = false
 	} else {
 		b.log.InfoLog("Only authorized users are allowed to disable or enable listening on bot")
 	}
 }
 
 // startListening switches teh flag botListening, from Bot struct to true.
-func (b Bot) startListening(m *discordgo.MessageCreate) {
-	if b.checkUserAllowed(m.Author.ID) {
+func (b BotActions) startListening() {
+	if b.checkUserAllowed(b.m.Author.ID) {
 		b.log.InfoLog("enabling listening on bot")
-		b.config.BotListening = true
+		b.bot.config.BotListening = true
 	} else {
 		b.log.InfoLog("Only authorized users are allowed to disable or enable listening on bot")
 	}
 }
 
 // callForGaming sends a message into the channel mentioning @here to notify all users.
-func (b Bot) callForGaming(s *discordgo.Session, m *discordgo.MessageCreate) {
+func (b BotActions) callForGaming() {
 	b.log.InfoLog("calling everyone on server to play")
-	jogo := b.gameToPlay(m.Content)
+	jogo := b.gameToPlay(b.m.Content)
 
 	message := fmt.Sprintf("@here BORA JOGAR %s", jogo)
 
-	_, err := s.ChannelMessageSendReply(m.ChannelID, message, &discordgo.MessageReference{ChannelID: m.ChannelID, MessageID: m.Message.ID})
+	_, err := b.s.ChannelMessageSendReply(b.m.ChannelID, message, &discordgo.MessageReference{ChannelID: b.m.ChannelID, MessageID: b.m.Message.ID})
 	if err != nil {
 		b.log.ErrorLog(fmt.Sprintf("error while calling everyone to play: %s", err.Error()))
 	}
 }
 
 // gameToPlay selects the message from a predefined list and returns.
-func (b Bot) gameToPlay(message string) string {
+func (b BotActions) gameToPlay(message string) string {
 	if strings.Contains(strings.ToLower(message), "cs") || strings.Contains(strings.ToLower(message), "csgo") {
 		return "UM CSZINHO"
 	}
@@ -63,21 +83,21 @@ func (b Bot) gameToPlay(message string) string {
 }
 
 // checkUserAllowed identifies if the user executing the action is allowed to.
-func (b Bot) checkUserAllowed(userid string) bool {
+func (b BotActions) checkUserAllowed(userid string) bool {
 	return userid == "343136401711169539"
 }
 
 // startPoll starts a poll into the channel, which will delete the message who requested the poll. The poll will be an EmbedMessage,
 // that last for 5 minutes and automatically adds votes for up and down. Once the 5 minutes have passed, the poll is deleted, and
 // the results are posted back into the channel.
-func (b Bot) startPoll(s *discordgo.Session, m *discordgo.MessageCreate) {
-	pollMessage := strings.Replace(strings.ToUpper(m.Content), "/POLL", "", -1)
+func (b BotActions) startPoll() {
+	pollMessage := strings.Replace(strings.ToUpper(b.m.Content), "/POLL", "", -1)
 
 	pollMessage = strings.Trim(pollMessage, " ")
 
 	if len(pollMessage) <= 0 {
 		message := "Para iniciar uma poll, digite o topico logo após /poll"
-		_, err := s.ChannelMessageSendReply(m.ChannelID, message, &discordgo.MessageReference{ChannelID: m.ChannelID, MessageID: m.Message.ID})
+		_, err := b.s.ChannelMessageSendReply(b.m.ChannelID, message, &discordgo.MessageReference{ChannelID: b.m.ChannelID, MessageID: b.m.Message.ID})
 		if err != nil {
 			b.log.ErrorLog(fmt.Sprintf("error initiating poll: %s", err.Error()))
 		}
@@ -87,35 +107,35 @@ func (b Bot) startPoll(s *discordgo.Session, m *discordgo.MessageCreate) {
 	timer := common.Newtimer(5)
 	showTime := timer.ShowNormalizedTime()
 
-	msgEmbed := generatePollEmbed(pollMessage, m.Author.Username, m.Author.AvatarURL(""), showTime)
+	msgEmbed := generatePollEmbed(pollMessage, b.m.Author.Username, b.m.Author.AvatarURL(""), showTime)
 
 	// delete original message from user
-	err := s.ChannelMessageDelete(m.ChannelID, m.Message.ID)
+	err := b.s.ChannelMessageDelete(b.m.ChannelID, b.m.Message.ID)
 	if err != nil {
 		b.log.ErrorLog(fmt.Sprintf("error while trying to delete message: %s", err.Error()))
 	}
 
 	// send new message with poll
-	newPoll, err := s.ChannelMessageSendEmbed(m.ChannelID, msgEmbed)
+	newPoll, err := b.s.ChannelMessageSendEmbed(b.m.ChannelID, msgEmbed)
 	if err != nil {
 		b.log.ErrorLog(fmt.Sprintf("error initiating poll: %s", err.Error()))
 	}
 
 	// add reaction to indicate how to vote
-	err = s.MessageReactionAdd(newPoll.ChannelID, newPoll.ID, "👍")
+	err = b.s.MessageReactionAdd(newPoll.ChannelID, newPoll.ID, "👍")
 	if err != nil {
 		b.log.ErrorLog(fmt.Sprintf("error adding reactions to poll: %s", err.Error()))
 	}
-	err = s.MessageReactionAdd(newPoll.ChannelID, newPoll.ID, "👎")
+	err = b.s.MessageReactionAdd(newPoll.ChannelID, newPoll.ID, "👎")
 	if err != nil {
 		b.log.ErrorLog(fmt.Sprintf("error adding reactions to poll: %s", err.Error()))
 	}
 
-	go b.runPollTicker(pollMessage, m.Author, s, newPoll, timer)
+	go b.runPollTicker(pollMessage, b.m.Author, newPoll, timer)
 }
 
 // runPollTicker is a ticker which controls the time and updates the message back into the channel, updating the timer for the poll to finish.
-func (b Bot) runPollTicker(pollMessage string, originalAuthor *discordgo.User, s *discordgo.Session, m *discordgo.Message, timer common.Timer) {
+func (b BotActions) runPollTicker(pollMessage string, originalAuthor *discordgo.User, m *discordgo.Message, timer common.Timer) {
 	ticker := time.NewTicker(time.Second)
 	done := make(chan bool)
 
@@ -123,30 +143,30 @@ func (b Bot) runPollTicker(pollMessage string, originalAuthor *discordgo.User, s
 		for {
 			select {
 			case <-done:
-				tup, err := s.MessageReactions(m.ChannelID, m.ID, "👍", 100, "", "")
+				tup, err := b.s.MessageReactions(m.ChannelID, m.ID, "👍", 100, "", "")
 				if err != nil {
 					b.log.ErrorLog(fmt.Sprintf("error reading poll results: %s", err.Error()))
 				}
 
-				tdown, err := s.MessageReactions(m.ChannelID, m.ID, "👎", 100, "", "")
+				tdown, err := b.s.MessageReactions(m.ChannelID, m.ID, "👎", 100, "", "")
 				if err != nil {
 					b.log.ErrorLog(fmt.Sprintf("error reading poll results: %s", err.Error()))
 				}
 
-				err = s.ChannelMessageDelete(m.ChannelID, m.ID)
+				err = b.s.ChannelMessageDelete(m.ChannelID, m.ID)
 				if err != nil {
 					b.log.ErrorLog(fmt.Sprintf("error deleting poll message: %s", err.Error()))
 				}
 
 				pollMessage = fmt.Sprintf("**%s** \n 👍 %d x %d 👎", pollMessage, len(tup)-1, len(tdown)-1)
-				_, err = s.ChannelMessageSend(m.ChannelID, pollMessage)
+				_, err = b.s.ChannelMessageSend(m.ChannelID, pollMessage)
 				if err != nil {
 					b.log.ErrorLog(fmt.Sprintf("error sending poll results back to channel: %s", err.Error()))
 				}
 
 			case <-ticker.C:
 				timer = timer.Countdown()
-				_, err := s.ChannelMessageEditEmbed(m.ChannelID, m.ID, generatePollEmbed(pollMessage, originalAuthor.Username, originalAuthor.AvatarURL(""), timer.ShowNormalizedTime()))
+				_, err := b.s.ChannelMessageEditEmbed(m.ChannelID, m.ID, generatePollEmbed(pollMessage, originalAuthor.Username, originalAuthor.AvatarURL(""), timer.ShowNormalizedTime()))
 				if err != nil {
 					b.log.ErrorLog(fmt.Sprintf("error editing poll message with timer: %s", err.Error()))
 				}
