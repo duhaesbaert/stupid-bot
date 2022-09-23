@@ -1,6 +1,6 @@
 package main
 
-import(
+import (
 	"stupid-bot/bot"
 	"stupid-bot/common"
 	"stupid-bot/config"
@@ -24,4 +24,3 @@ func main() {
 	<-make(chan struct{})
 	return
 }
-

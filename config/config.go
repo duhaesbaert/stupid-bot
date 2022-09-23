@@ -7,15 +7,11 @@ import (
 	"stupid-bot/common"
 )
 
-var (
-	// value from config.json
-)
-
 type ConfigStruct struct {
-	Token    		string `json:"Token"`
-	BotPrefix		string `json:"BotPrefix"`
-	log				common.Logger
-	BotListening	bool
+	Token        string `json:"Token"`
+	BotPrefix    string `json:"BotPrefix"`
+	log          common.Logger
+	BotListening bool
 }
 
 // NewConfig reads the config.json file contained on the directory, and instantiates a new ConfigStruct to be used by the bot.
