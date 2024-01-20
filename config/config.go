@@ -50,5 +50,5 @@ func (cs ConfigStruct) PrintConfiguration() {
 	cs.log.DebugLog("Configurations:")
 	cs.log.DebugLog("Token: " + cs.Token)
 	cs.log.DebugLog("Prefix: " + cs.BotPrefix)
-	cs.log.DebugLog(fmt.Sprintf("Listening: %b", cs.BotListening))
+	cs.log.DebugLog(fmt.Sprintf("Listening: %v", cs.BotListening))
 }
